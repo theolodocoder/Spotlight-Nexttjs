@@ -1,6 +1,8 @@
+"use client";
+
 import { AxiosError } from "axios";
 import { Button } from "./ui/button";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 type ServerError = {
@@ -13,20 +15,20 @@ type Props = {
   onRetry?: () => void;
 };
 
-const ErrorOccured = ({ error, onRetry }: Props) => {
-  const navigate = useNavigate();
+const ErrorOccurred = ({ error, onRetry }: Props) => {
+  const router = useRouter();
 
   useEffect(() => {
     if (error instanceof AxiosError && error.response?.data) {
       const { errorCode } = error.response.data;
       switch (errorCode) {
         case "U_000_0012":
-          navigate("/store-not-found");
+          router.push("/store-not-found");
           break;
-        // Handle other error codes a needed
+        // Handle other error codes as needed
       }
     }
-  }, [error, navigate]);
+  }, [error, router]);
 
   let errorMessage = "An unexpected error occurred";
 
@@ -45,7 +47,7 @@ const ErrorOccured = ({ error, onRetry }: Props) => {
     <div className="w-full text-center min-h-dvh flex flex-col space-y-10 justify-center items-center">
       <p className="text-lg text-gray-800">{errorMessage}</p>
       {onRetry && (
-        <Button variant={"default"} onClick={onRetry} className="rounded-full">
+        <Button variant="default" onClick={onRetry} className="rounded-full">
           Retry
         </Button>
       )}
@@ -53,4 +55,4 @@ const ErrorOccured = ({ error, onRetry }: Props) => {
   );
 };
 
-export default ErrorOccured;
+export default ErrorOccurred;
