@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { API_URL } from "@/constants/api";
+import { IProduct } from "@/types";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
 
 const KEY_CODES = {
   DOWN: 40,
@@ -20,12 +21,18 @@ type TSuggestions = {
   }[];
   keywords: { name: string }[];
 };
-export function useAutoComplete({ delay = 500, source: any }) {
+export function useAutoComplete({
+  delay = 500,
+  source,
+}: {
+  delay: number;
+  source: any;
+}) {
   const [myTimeout, setMyTimeOut] = useState<ReturnType<
     typeof setTimeout
   > | null>(null);
-  const keywordsListRef = useRef<HTMLUListElement>(null);
-  const storesListRef = useRef<HTMLUListElement>(null);
+  const keywordsListRef = useRef<any>(null);
+  const storesListRef = useRef<any>(null);
   const [suggestions, setSuggestions] = useState<TSuggestions>({
     stores: [],
     keywords: [],
@@ -36,9 +43,9 @@ export function useAutoComplete({ delay = 500, source: any }) {
   const [textValue, setTextValue] = useState("");
   const [isProductLoading, setProductLoading] = useState(false);
   const [isProductError, setProductError] = useState(false);
-  const [productsByKeyword, setProductByKeyword] = useState([]);
+  const [productsByKeyword, setProductByKeyword] = useState<any>([]);
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   async function getProductByKeyword(keyword: string) {
     const url = `${API_URL}/api/v1/stores/search-products-by-keyword?search=${keyword}&page=1&perPage=20`;
@@ -64,7 +71,7 @@ export function useAutoComplete({ delay = 500, source: any }) {
       console.log(index, id);
       if (id.startsWith("store")) {
         setTextValue(suggestions.stores[index].name);
-        navigate(`/${suggestions.stores[index].username}`);
+        router.push(`/${suggestions.stores[index].username}`);
       }
       if (id.startsWith("keyword")) {
         setTextValue(suggestions.keywords[index].name);
@@ -151,7 +158,7 @@ export function useAutoComplete({ delay = 500, source: any }) {
   //   listRef.current.scrollTop = 0;
   // }
 
-  function onKeyDown(e) {
+  function onKeyDown(e: any) {
     const keyOperation = {
       [KEY_CODES.DOWN]: scrollDown,
       [KEY_CODES.UP]: scrollUp,
@@ -176,14 +183,14 @@ export function useAutoComplete({ delay = 500, source: any }) {
 
   return {
     bindOptionKey: {
-      onClick: (e) => {
+      onClick: (e: any) => {
         const nodes = Array.from(keywordsListRef?.current.children);
         selectOption(nodes.indexOf(e.target.closest("li")), e.target.id);
         setSelectedIndexId(e.target.id);
       },
     },
     bindOptionStore: {
-      onClick: (e) => {
+      onClick: (e: any) => {
         const nodes = Array.from(storesListRef?.current.children);
         selectOption(nodes.indexOf(e.target.closest("li")), e.target.id);
         setSelectedIndexId(e.target.id);
@@ -191,7 +198,8 @@ export function useAutoComplete({ delay = 500, source: any }) {
     },
     bindInput: {
       value: textValue,
-      onChange: (e) => onTextChange(e.target.value),
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        onTextChange(e.target.value),
       onKeyDown,
     },
     bindOptionsKey: {

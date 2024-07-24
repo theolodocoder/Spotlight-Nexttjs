@@ -1,4 +1,5 @@
 "use client";
+
 import { useMediaQuery } from "@/hooks/use-media-query";
 import notify from "@/services/notification-service/notification.service";
 import { AttachmentType, IProduct, TEvent } from "@/types";
@@ -8,7 +9,7 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer";
 import ProductDetails from "./product-details";
 import ProductSingle from "./product-single";
-import { useParams } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 
 type Props = {
   item: IProduct;
@@ -18,23 +19,21 @@ function Product({ item }: Props) {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const params = useParams();
-  const currentPath = window.location.pathname;
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleNotify = async () => {
       if (open) {
         await notify(TEvent.VIEWED, {
           storeUsername:
-            currentPath === "/explore" ? item.store.username : params.storeName,
+            pathname === "/explore" ? item.store.username : params.storeName,
           productId: item.id,
           productName: item.name,
         });
       }
     };
-
     handleNotify();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, item, params.storeName, pathname]);
 
   if (isDesktop) {
     return (
@@ -67,7 +66,7 @@ export function ProductIcon({
   size: number;
 }) {
   if (type === AttachmentType.PICTURE && size <= 1) {
-    return;
+    return null;
   }
   return (
     <div className="text-white text-xl">

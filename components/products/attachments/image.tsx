@@ -33,12 +33,11 @@ const Image = ({ hash, src, alt, styles }: TImageProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: imgIsLoading ? 0 : 1 }}
           onLoad={afterLoad}
-          className={styles}
+          className={styles + "xl:h-[500px]"}
           src={src}
           alt={alt}
           loading="lazy"
           width="100%"
-          height="100%"
         />
       )}
     </div>

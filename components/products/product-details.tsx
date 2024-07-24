@@ -11,6 +11,9 @@ import { Button } from "../ui/button";
 import ImageDetail from "./attachments/image-detail";
 import VideoDetail from "./attachments/video-detail";
 import Share from "./share";
+import { BsWhatsapp } from "react-icons/bs";
+import { getWhatsAppLink } from "@/lib/getWhatsappLink";
+import { toast } from "../ui/use-toast";
 
 type TProductDetailsProps = {
   item: IProduct;
@@ -24,6 +27,19 @@ const ProductDetails = ({ item }: TProductDetailsProps) => {
   const _storeName =
     pathname === "/explore" ? item.store.username : params.storeName;
   const shareUrl = `${window.location.origin}/${_storeName}/shared/${item.id}`;
+
+  const message =
+    "Hey there! 👋 I just spotted your awesome store on Spotlight and couldn't resist checking it out. 🛍️✨ I'm really interested in one of your products. Can we chat about it? 😊 #SpotlightShopper";
+  const handleSendMessage = () => {
+    const whaLink = getWhatsAppLink(item.store.phoneNumber ?? "", message);
+    if (whaLink == "no-link") {
+      toast({
+        description: "No Phone Number",
+      });
+      return;
+    }
+    window.open(whaLink, "_blank");
+  };
 
   const downloadImage = (imageUrl: string) => {
     setLoading(true);
@@ -100,10 +116,10 @@ const ProductDetails = ({ item }: TProductDetailsProps) => {
             <Button
               className="items-center gap-x-3 rounded-full p-0"
               size={"lg"}
-              onClick={() => downloadImage(item?.card)}
+              onClick={handleSendMessage}
             >
-              <VscWand size={18} className="hidden md:block" />
-              {loading ? "..." : "Download Card"}
+              <BsWhatsapp size={18} className="hidden md:block" />
+              Send a Message
             </Button>
             <Share
               shareUrl={shareUrl}

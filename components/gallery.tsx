@@ -16,7 +16,7 @@ function Gallery({ products, getNoResultsMessage }: Props) {
     noResultsMessage = getNoResultsMessage();
   }
 
-  if (!products.length) {
+  if (products.length <= 0) {
     return (
       <div className="flex flex-col items-center justify-center h-auto gap-y-3 py-10">
         <div className="w-[200px] mx-auto">
